@@ -1,10 +1,6 @@
 package pl.gr.veterinaryapp.model.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import pl.gr.veterinaryapp.common.OperationType;
 import pl.gr.veterinaryapp.common.VisitType;
 
@@ -14,24 +10,14 @@ import java.time.OffsetDateTime;
 
 @Data
 @Builder(builderClassName = "VisitRequestDtoBuilder")
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class VisitRequestDto {
 
-    private long vetId;
-    private long petId;
-    private OffsetDateTime startDateTime;
-    private Duration duration;
-    private BigDecimal price;
-    private VisitType visitType;
-    private OperationType operationType;
-
-    public static class VisitRequestDtoBuilder {
-
-        private long vetId = 1;
-        private long petId = 1;
-        private OffsetDateTime startDateTime = OffsetDateTime.MIN;
-        private Duration duration = Duration.ZERO;
-        private BigDecimal price = BigDecimal.ZERO;
-    }
+    private final Long vetId;
+    private final Long petId;
+    private final OffsetDateTime startDateTime;
+    private final Duration duration;
+    private final BigDecimal price;
+    private final VisitType visitType;
+    private final OperationType operationType;
 }

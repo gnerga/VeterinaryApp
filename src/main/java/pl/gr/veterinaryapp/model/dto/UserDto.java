@@ -7,5 +7,5 @@ public class UserDto {
 
     private String username;
     private String password;
-    private long role;
+    private Long role;
 }

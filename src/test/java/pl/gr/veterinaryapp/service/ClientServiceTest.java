@@ -10,6 +10,7 @@ import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
 import pl.gr.veterinaryapp.mapper.ClientMapper;
 import pl.gr.veterinaryapp.model.dto.ClientRequestDto;
 import pl.gr.veterinaryapp.model.entity.Client;
+import pl.gr.veterinaryapp.model.entity.VetAppUser;
 import pl.gr.veterinaryapp.repository.ClientRepository;
 import pl.gr.veterinaryapp.repository.UserRepository;
 import pl.gr.veterinaryapp.service.impl.ClientServiceImpl;
@@ -33,6 +34,7 @@ class ClientServiceTest {
     private static final long CLIENT_ID = 1L;
     private static final String CLIENT_NAME = "Konrad";
     private static final String CLIENT_SURNAME = "Gabrukiewicz";
+    private static final String CLIENT_USERNAME = "kgab";
     @Mock
     private ClientRepository clientRepository;
     @Mock
@@ -77,11 +79,17 @@ class ClientServiceTest {
         ClientRequestDto clientDTO = new ClientRequestDto();
         clientDTO.setName(CLIENT_NAME);
         clientDTO.setSurname(CLIENT_SURNAME);
+        clientDTO.setUsername(CLIENT_USERNAME);
+
+        VetAppUser vetAppUser = new VetAppUser();
+        vetAppUser.setUsername(CLIENT_USERNAME);
+
         Client client = new Client();
         client.setName(CLIENT_NAME);
         client.setSurname(CLIENT_SURNAME);
 
         when(mapper.map(any(ClientRequestDto.class))).thenReturn(client);
+        when(userRepository.findByUsername(CLIENT_USERNAME)).thenReturn(Optional.of(vetAppUser));
         when(clientRepository.save(any(Client.class))).thenReturn(client);
 
         var result = clientService.createClient(clientDTO);

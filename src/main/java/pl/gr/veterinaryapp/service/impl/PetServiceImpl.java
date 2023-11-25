@@ -38,10 +38,10 @@ public class PetServiceImpl implements PetService {
     @Override
     public Pet getPetById(User user, long id) {
         Pet pet = petRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
+                .orElseThrow(() -> new ResourceNotFoundException("Pet with given id not found."));
 
         if (!isUserAuthorized(user, pet.getClient())) {
-            throw new ResourceNotFoundException("Wrong id.");
+            throw new ResourceNotFoundException("User with given id not found.");
         }
 
         return pet;

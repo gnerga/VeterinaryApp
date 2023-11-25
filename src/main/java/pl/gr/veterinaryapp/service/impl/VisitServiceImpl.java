@@ -130,11 +130,8 @@ public class VisitServiceImpl implements VisitService {
         var rooms = treatmentRoomRepository.findAll();
         rooms.removeAll(occupiedRooms);
 
-        if (rooms.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(rooms.get(0));
-        }
+        return rooms.stream()
+                .findFirst();
     }
 
     @Transactional
@@ -170,6 +167,7 @@ public class VisitServiceImpl implements VisitService {
                 .stream()
                 .map(Vet::getId)
                 .collect(Collectors.toSet());
+
         var visits = visitRepository.findAllInDateTimeRangeAndVetIdIn(startDateTime, endDateTime, vetIdsSet);
 
         List<AvailableVisitDto> result = new ArrayList<>();
@@ -233,9 +231,8 @@ public class VisitServiceImpl implements VisitService {
         var visits =
                 visitRepository.findAllByEndDateAndEndTimeBeforeAndVisitStatus(
                         OffsetDateTime.now(systemClock), VisitStatus.SCHEDULED);
-        for (var visit : visits) {
-            visit.setVisitStatus(VisitStatus.EXPIRED);
-        }
+
+        visits.forEach(visit -> visit.setVisitStatus(VisitStatus.EXPIRED));
     }
 
     private boolean isUserAuthorized(User user, Client client) {
@@ -243,17 +240,14 @@ public class VisitServiceImpl implements VisitService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch("ROLE_CLIENT"::equalsIgnoreCase);
-        if (isClient) {
-            if (client.getUser() == null) {
-                return false;
-            } else {
-                return client.getUser().getUsername().equalsIgnoreCase(user.getUsername());
-            }
-        }
-        return true;
+
+       if (isClient && client.getUser() != null) {
+           return client.getUser().getUsername().equalsIgnoreCase(user.getUsername());
+       }
+       return true;
     }
 
     public boolean isTimeBetweenIncludingEndPoints(OffsetTime min, OffsetTime max, OffsetDateTime date) {
-        return !(date.toOffsetTime().isBefore(min) || date.toOffsetTime().isAfter(max));
+        return date.toOffsetTime().isAfter(min) && date.toOffsetTime().isBefore(max);
     }
 }

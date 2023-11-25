@@ -58,14 +58,11 @@ public class VisitRestController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX") OffsetDateTime endDateTime,
             @RequestParam(required = false) List<Long> vetIds) {
         Set<Long> vetIdsSet;
-        if (vetIds == null) {
-            vetIdsSet = Collections.emptySet();
-        } else {
-            vetIdsSet = vetIds
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
-        }
+
+        vetIdsSet = vetIds == null ? Collections.emptySet() : vetIds
+                                                                .stream()
+                                                                .filter(Objects::nonNull)
+                                                                .collect(Collectors.toSet());
 
         var availableVisits = visitService
                 .getAvailableVisits(startDateTime, endDateTime, vetIdsSet);

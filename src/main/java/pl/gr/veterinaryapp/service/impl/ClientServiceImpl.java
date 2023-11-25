@@ -25,7 +25,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client getClientById(long id) {
-        System.out.println("XXX");
         return clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
     }
@@ -43,7 +42,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
         VetAppUser user = userRepository.findByUsername(clientRequestDTO.getUsername())
-                .orElse(null);
+                .orElseThrow(()->new ResourceNotFoundException("User with given username doesn't exist"));
 
         Client client = mapper.map(clientRequestDTO);
         client.setUser(user);

@@ -5,5 +5,5 @@ import pl.gr.veterinaryapp.model.dto.LoginUser;
 
 public interface TokenService {
 
-    AuthToken register(LoginUser loginUser);
+    AuthToken login(LoginUser loginUser);
 }

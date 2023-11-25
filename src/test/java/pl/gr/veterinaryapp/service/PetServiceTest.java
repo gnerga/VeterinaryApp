@@ -102,7 +102,7 @@ class PetServiceTest {
                 catchThrowableOfType(() -> petService.getPetById(USER, PET_ID), ResourceNotFoundException.class);
 
         assertThat(thrown)
-                .hasMessage("Wrong id.");
+                .hasMessage("Pet with given id not found.");
 
         verify(petRepository).findById(eq(PET_ID));
         verifyNoInteractions(clientRepository, animalRepository);
@@ -222,7 +222,7 @@ class PetServiceTest {
         verifyNoInteractions(petRepository);
     }
 
-    private PetRequestDto preparePetRequestDto(String petName, long animalId, long clientId, LocalDate birthDate) {
+    private PetRequestDto preparePetRequestDto(String petName, Long animalId, Long clientId, LocalDate birthDate) {
         PetRequestDto request = new PetRequestDto();
         request.setName(petName);
         request.setAnimalId(animalId);

@@ -10,9 +10,9 @@ import java.time.LocalDate;
 @Data
 public class PetResponseDto extends RepresentationModel<PetResponseDto> {
 
-    private long id;
+    private Long id;
     private String name;
     private LocalDate birthDate;
-    private long animalId;
-    private long clientId;
+    private Long animalId;
+    private Long clientId;
 }

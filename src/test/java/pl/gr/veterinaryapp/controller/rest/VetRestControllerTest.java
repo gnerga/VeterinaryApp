@@ -13,7 +13,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.gr.veterinaryapp.config.WebSecurityConfig;
 import pl.gr.veterinaryapp.jwt.JwtAuthenticationFilter;
+import pl.gr.veterinaryapp.mapper.VetMapper;
 import pl.gr.veterinaryapp.model.dto.VetRequestDto;
+import pl.gr.veterinaryapp.model.dto.VetResponseDto;
 import pl.gr.veterinaryapp.model.entity.Vet;
 import pl.gr.veterinaryapp.service.VetService;
 
@@ -51,6 +53,9 @@ class VetRestControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockBean
+    private VetMapper vetMapper;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -63,7 +68,10 @@ class VetRestControllerTest {
 
         var vet = prepareVet(VET_NAME, VET_SURNAME, IMAGE_URL, workStartTime, workEndTime);
 
+        var vetResponse = prepareVetResponseDto(VET_NAME, VET_SURNAME, IMAGE_URL, workStartTime, workEndTime);
+
         when(vetService.createVet(any(VetRequestDto.class))).thenReturn(vet);
+        when(vetMapper.mapToResponse(vet)).thenReturn(vetResponse);
 
         mockMvc.perform(post("/api/vets")
                 .with(csrf())
@@ -85,8 +93,10 @@ class VetRestControllerTest {
         OffsetTime workEndTime = OffsetTime.of(LocalTime.MAX, ZoneOffset.MAX);
 
         var vet = prepareVet(VET_NAME, VET_SURNAME, IMAGE_URL, workStartTime, workEndTime);
+        var vetResponse = prepareVetResponseDto(VET_NAME, VET_SURNAME, IMAGE_URL, workStartTime, workEndTime);
 
         when(vetService.getVetById(anyLong())).thenReturn(vet);
+        when(vetMapper.mapToResponse(vet)).thenReturn(vetResponse);
 
         mockMvc.perform(get("/api/vets/{id}", ID)
                 .accept(MediaType.APPLICATION_JSON))
@@ -107,10 +117,12 @@ class VetRestControllerTest {
         OffsetTime workEndTime = OffsetTime.of(LocalTime.MAX, ZoneOffset.MAX);
 
         var vet = prepareVet(VET_NAME, VET_SURNAME, IMAGE_URL, workStartTime, workEndTime);
+        var vetResponse = prepareVetResponseDto(VET_NAME, VET_SURNAME, IMAGE_URL, workStartTime, workEndTime);
 
         List<Vet> vets = List.of(vet, vet);
 
         when(vetService.getAllVets()).thenReturn(vets);
+        when(vetMapper.mapToResponse(vet)).thenReturn(vetResponse);
 
         mockMvc.perform(get("/api/vets")
                 .accept(MediaType.APPLICATION_JSON))
@@ -150,5 +162,18 @@ class VetRestControllerTest {
         vetRequest.setWorkStartTime(workStartTime);
         vetRequest.setWorkEndTime(workEndTime);
         return vetRequest;
+    }
+
+    private VetResponseDto prepareVetResponseDto(String name, String surname, String photoUrl, OffsetTime workStartTime,
+                                                 OffsetTime workEndTime) {
+
+        return new VetResponseDto(
+                ID,
+                name,
+                surname,
+                photoUrl,
+                workStartTime,
+                workEndTime
+        );
     }
 }

@@ -18,7 +18,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             "where :vetId = v.vet.id " +
             "and v.startDateTime  <= :endDateTime " +
             "and (v.startDateTime + v.duration) >= :startDateTime")
-    List<Visit> findAllOverlapping(long vetId, OffsetDateTime startDateTime, OffsetDateTime endDateTime);
+    List<Visit> findAllOverlapping(Long vetId, OffsetDateTime startDateTime, OffsetDateTime endDateTime);
 
     @Query("select v from Visit v where " +
             "(v.startDateTime + v.duration) <= :now " +

@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.gr.veterinaryapp.mapper.VetMapper;
 import pl.gr.veterinaryapp.model.dto.VetRequestDto;
+import pl.gr.veterinaryapp.model.dto.VetResponseDto;
 import pl.gr.veterinaryapp.model.entity.Vet;
 import pl.gr.veterinaryapp.service.VetService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,20 +23,23 @@ import java.util.List;
 public class VetRestController {
 
     private final VetService vetService;
-
+    private final VetMapper vetMapper;
     @GetMapping("/{id}")
-    public Vet getVet(@PathVariable long id) {
-        return vetService.getVetById(id);
+    public VetResponseDto getVet(@PathVariable long id) {
+        return vetMapper.mapToResponse(vetService.getVetById(id));
     }
 
     @PostMapping
-    public Vet addVet(@RequestBody VetRequestDto vetRequestDTO) {
-        return vetService.createVet(vetRequestDTO);
+    public VetResponseDto addVet(@RequestBody VetRequestDto vetRequestDTO) {
+        return vetMapper.mapToResponse(vetService.createVet(vetRequestDTO));
     }
 
     @GetMapping
-    public List<Vet> getAllVets() {
-        return vetService.getAllVets();
+    public List<VetResponseDto> getAllVets() {
+        return vetService.getAllVets()
+                .stream()
+                .map(vet -> vetMapper.mapToResponse(vet))
+                .collect(Collectors.toList());
     }
 
     @DeleteMapping("/{id}")

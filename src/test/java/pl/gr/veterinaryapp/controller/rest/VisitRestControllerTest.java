@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import pl.gr.veterinaryapp.common.OperationType;
@@ -209,15 +208,15 @@ class VisitRestControllerTest {
     @Test
     @WithMockUser
     void finalizeVisit_CorrectData_Returned() throws Exception {
-        var visitEditDto = new VisitEditDto();
+        var visitEditDto = new VisitEditDto(1L, "test", VisitStatus.SCHEDULED);
 
         var visit = new Visit();
 
         var visitResponse = VisitResponseDto.builder()
                 .id(ID)
-                .vetId(1)
-                .petId(1)
-                .treatmentRoomId(1)
+                .vetId(1L)
+                .petId(1L)
+                .treatmentRoomId(1L)
                 .startDateTime(OffsetDateTime.of(LocalDateTime.of(2020, 11, 3, 5, 30), ZoneOffset.UTC))
                 .duration(Duration.ofMinutes(30))
                 .price(BigDecimal.valueOf(100))

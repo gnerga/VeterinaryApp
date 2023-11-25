@@ -58,7 +58,6 @@ public class PetRestController {
 
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public PetResponseDto createPet(@AuthenticationPrincipal User user, @RequestBody PetRequestDto petRequestDto) {
-        System.out.println(user);
 
         var pet = mapper.map(petService.createPet(user, petRequestDto));
         addLinks(pet);
