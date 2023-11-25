@@ -1,6 +1,7 @@
 package pl.gr.veterinaryapp.controller.rest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
@@ -35,6 +36,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 @RequestMapping("api/visits")
 @RestController
+@Slf4j
 public class VisitRestController {
 
     private final VisitService visitService;
@@ -42,13 +44,16 @@ public class VisitRestController {
 
     @DeleteMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public void delete(@PathVariable long id) {
+        log.info("Delete visit with id: {}", id);
         visitService.deleteVisit(id);
     }
 
     @GetMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public VisitResponseDto getVisit(@AuthenticationPrincipal User user, @PathVariable long id) {
+        log.info("Get user: {} visit by id: {}",user.getUsername(), id);
         var visit = mapper.map(visitService.getVisitById(user, id));
         addLinks(visit);
+        log.info("Return visit: {} with given id: {}", visit.toString(), id);
         return visit;
     }
 
@@ -58,6 +63,7 @@ public class VisitRestController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX") OffsetDateTime endDateTime,
             @RequestParam(required = false) List<Long> vetIds) {
         Set<Long> vetIdsSet;
+        log.info("Get list of available visits in period from: {} - to: {} for given vet ids: {}", startDateTime, endDateTime, vetIds);
         if (vetIds == null) {
             vetIdsSet = Collections.emptySet();
         } else {
@@ -75,11 +81,13 @@ public class VisitRestController {
                 availableVisit.add(createVetLink(vetId));
             }
         }
+        log.info("Return list of available visits: {}", availableVisits);
         return availableVisits;
     }
 
     @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public List<VisitResponseDto> getAllVisits(@AuthenticationPrincipal User user) {
+        log.info("Get all user: {} visits", user.getUsername());
         var visits = mapper.mapAsList(visitService.getAllVisits(user));
 
         for (var visit : visits) {
@@ -88,22 +96,26 @@ public class VisitRestController {
                     .withSelfRel();
             visit.add(link);
         }
-
+        log.info("Return list of visit: {}", visits);
         return visits;
     }
 
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public VisitResponseDto createVisit(@AuthenticationPrincipal User user,
                                         @RequestBody VisitRequestDto visitRequestDto) {
+        log.info("Create visit: {} for user: {}", visitRequestDto, user.getUsername());
         var visit = mapper.map(visitService.createVisit(user, visitRequestDto));
         addLinks(visit);
+        log.info("Return created visit: {}", visit);
         return visit;
     }
 
     @PatchMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public VisitResponseDto finalizeVisit(@RequestBody VisitEditDto visitEditDto) {
+        log.info("Try to finalize visit: {}", visitEditDto);
         var visit = mapper.map(visitService.finalizeVisit(visitEditDto));
         addLinks(visit);
+        log.info("Return finalized visit: {}", visit);
         return visit;
     }
 

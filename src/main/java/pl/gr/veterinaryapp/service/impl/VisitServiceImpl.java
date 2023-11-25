@@ -1,6 +1,7 @@
 package pl.gr.veterinaryapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -73,7 +74,10 @@ public class VisitServiceImpl implements VisitService {
         var duration = visitRequestDto.getDuration();
 
         Vet vet = vetRepository.findById(vetId)
-                .orElseThrow(() -> new IncorrectDataException("Wrong vet id."));
+                .orElseThrow(() -> {
+                    var x = new IncorrectDataException("Wrong vet id.");
+                    throw(x);
+                });
 
         validateVisitDate(vetId, startDateTime, duration);
 
