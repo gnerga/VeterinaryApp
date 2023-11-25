@@ -1,6 +1,7 @@
 package pl.gr.veterinaryapp.service;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import pl.gr.veterinaryapp.common.OperationType;
 import pl.gr.veterinaryapp.common.VisitStatus;
 import pl.gr.veterinaryapp.common.VisitType;
@@ -56,11 +59,10 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@TestPropertySource(properties = { "minimal.time.to.visit=30" })
 class VisitServiceTest {
 
     private static final long VISIT_ID = 1L;
@@ -77,6 +79,7 @@ class VisitServiceTest {
     private VetRepository vetRepository;
     @Mock
     private TreatmentRoomRepository treatmentRoomRepository;
+
     @Mock
     private Clock clock;
     @InjectMocks
@@ -87,6 +90,11 @@ class VisitServiceTest {
     @BeforeAll
     static void setupTest() {
         fixedClock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+    }
+
+    @BeforeEach
+    void setup() {
+        ReflectionTestUtils.setField(visitService, "minimalTimeToVisit", 30);
     }
 
     @Test

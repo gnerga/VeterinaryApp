@@ -1,6 +1,7 @@
 package pl.gr.veterinaryapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -37,14 +38,13 @@ import java.util.stream.Collectors;
 @Service
 public class VisitServiceImpl implements VisitService {
 
-    private static final int MINIMAL_TIME_TO_VISIT = 60;
-
     private final VisitRepository visitRepository;
     private final VetRepository vetRepository;
     private final PetRepository petRepository;
     private final TreatmentRoomRepository treatmentRoomRepository;
     private final Clock systemClock;
-
+    @Value("${minimal.time.to.visit}")
+    private Integer minimalTimeToVisit;
     @Override
     public Visit getVisitById(User user, long id) {
         Visit visit = visitRepository.findById(id)
@@ -112,7 +112,7 @@ public class VisitServiceImpl implements VisitService {
             throw new IncorrectDataException("Visit startDateTime need to be in future.");
         }
 
-        if (Duration.between(nowZoned, startDateTime).toMinutes() < MINIMAL_TIME_TO_VISIT) {
+        if (Duration.between(nowZoned, startDateTime).toMinutes() < minimalTimeToVisit) {
             throw new IncorrectDataException("The time to your visit is too short.");
         }
 
